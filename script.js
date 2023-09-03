@@ -22,10 +22,10 @@ switch(placeSplitted[0]){
 console.log(yAxis, xAxis);
 
 const figurePlace = 
-[['1',    '2',   '3', 'FZ'],
-['4',     '5',   '6', 'KZ'],
-['7',    '8',   '9',  'AZ'],
-['AV0', 'AV1', 'AV2', 'AV3']];
+[['1',    '2',   '3', 'X'],
+['4',     '5',   'X', 'X'],
+['7',    'X',   'P',  'AZ'],
+['0', 'X', 'AV2', 'AV3']];
 figurePlace[yAxis][xAxis] = 'P';
 const gameBoard = `   
       1     2     3
@@ -85,15 +85,26 @@ function verticalChecking(winningNumber, playerChar){
   return false;
 }
 
-function diagonalChecking(winningNumber, playerChar){
-  for (let h = 0; h < figurePlace[0].length-1; h++){
+function LeftDiagonalChecking(winningNumber, playerChar){
+  for (let h = 0; h < figurePlace[0].length; h++){
    for (let i = 0; i < figurePlace.length; i++){
-    for (let j = 0 + h, k = i; k >= 0; k--, j++){
-      console.log(figurePlace[k][j]);
+    let hitCounter = 0;
+    for (let j = 0 + h, k = i; k >= 0 && j < figurePlace[k].length; k--, j++){
+      //console.log();
+      //console.log(`${figurePlace[k][j]} hit counter: ${hitCounter++}`);
+      if (figurePlace[k][j] === playerChar){
+        hitCounter++;
+        if (hitCounter === winningNumber){
+          return true;
+        }
+      } else {
+        hitCounter = 0;
+      }
     }
    }
   }
+  return false;
 }
 
 console.log(hasWon(3, 'X'));
-diagonalChecking();
+console.log(LeftDiagonalChecking(3, 'X'));
