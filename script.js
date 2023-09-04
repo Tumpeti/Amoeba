@@ -1,11 +1,31 @@
 const capitalAlphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+const prompt = require('prompt-sync')();
 main();
 function main (){
-  const prompt = require('prompt-sync')();
+
   const boardSize = Number(prompt('Choose a gameboard size! (max size: 26) '));
   const gameData = gameDataAssembler(boardSize);
-  // console.log(gameData);
   console.log(boardGamePrinter(boardSize, gameData));
+  placing(gameData,'P', boardSize);
+  placing(gameData,'P', boardSize);
+}
+
+function placing(gameData, playerChar,boardSize){
+  let isValid = false;
+  let coordinates = prompt('Place your pawn! (A1 for example) ');
+  while (!isValid){
+  const coordY = (capitalAlphabet.indexOf(coordinates[0]));
+  const coordX = Number(coordinates[1]) - 1;
+  if (!gameData[coordY][coordX]){
+    gameData[coordY][coordX] = playerChar;
+    isValid = true;
+  } else {
+    console.clear();
+    console.log(boardGamePrinter(boardSize, gameData));
+    coordinates = prompt('Invalid placement! Place your pawn elsewhere! ');
+  }
+  console.log(boardGamePrinter(boardSize, gameData));
+  }
 }
 
 function gameDataAssembler(size){
@@ -21,6 +41,7 @@ function gameDataAssembler(size){
 }
 
 function boardGamePrinter(size, gameData){
+  console.clear();
   let numberSpacer = `   `
   let charSpacer = ` `
   let scores = `---`
