@@ -1,32 +1,92 @@
-const prompt = require('prompt-sync')();
-let placeOnBoard = prompt('Place somewhere on the board!')
-while (placeOnBoard.length !== 2){
-  placeOnBoard = prompt('Only one number and one character allowed!')
+const capitalAlphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+main();
+function main (){
+  const prompt = require('prompt-sync')();
+  const boardSize = Number(prompt('Choose a gameboard size! (max size: 26) '));
+  const gameData = gameDataAssembler(boardSize);
+  // console.log(gameData);
+  console.log(boardGamePrinter(boardSize, gameData));
 }
 
-const placeSplitted = placeOnBoard.split(''); //A 2
-console.log(placeSplitted);
-let xAxis = placeSplitted[1] - 1;
-let yAxis;
-switch(placeSplitted[0]){
-  case 'A': yAxis = 0;
-    break;
-  case 'B': yAxis = 1;
-    break;
-  case 'C': yAxis = 2;
-    break;
-  default: yAxis = -1;  
+function gameDataAssembler(size){
+  const lines = [];
+  for (let i = 0; i < size; i++ ){
+    const line  = [];
+    for (let j = 0; j < size; j++){
+      line.push('')
+    }
+    lines.push(line)
+  }
+  return lines;
+}
+
+function boardGamePrinter(size, gameData){
+  let numberSpacer = `   `
+  let charSpacer = ` `
+  let scores = `---`
+  let whiteSpace = `      `
+  if (size > 10){
+    numberSpacer = `     `
+    charSpacer = `  `
+    scores = `-----`
+    whiteSpace = `     `
+  }
+  let boardGame = `\n       `
+  for (let i = 0; i < size; i++) {
+    boardGame += `${i+1}`;
+    if (i < 9){
+      boardGame += numberSpacer;
+    } else {
+      boardGame += `    `
+    }
+  }
+  boardGame +=`\n`
+    for (let j = 0; j < size; j++){
+      boardGame += `\n${capitalAlphabet[j]}      `
+      for (let k = 0; k < size; k++) {
+        boardGame += `${(gameData[j][k]) ? (gameData[j][k]) : 'X'}` + charSpacer;
+        if (k !== size-1){
+          boardGame += `|` + charSpacer;
+        }       
+      }
+      boardGame += `\n` + whiteSpace;
+      if (j !== size - 1)
+      {
+      for(let h = 0; h < size; h++){
+      boardGame += scores;
+      if (h !== size-1){
+        boardGame += `+`
+      }
+      }
+    }
+  }
+  return boardGame;
+}
+
+
+// const placeSplitted = placeOnBoard.split(''); //A 2
+// console.log(placeSplitted);
+// let xAxis = placeSplitted[1] - 1;
+// let yAxis;
+// switch(placeSplitted[0]){
+//   case 'A': yAxis = 0;
+//     break;
+//   case 'B': yAxis = 1;
+//     break;
+//   case 'C': yAxis = 2;
+//     break;
+//   default: yAxis = -1;  
     
-}
+// }
 
-console.log(yAxis, xAxis);
+// console.log(yAxis, xAxis);
 
 const figurePlace = 
-[['1',    '2',   '3', 'X'],
-['4',     '5',   'X', 'X'],
-['7',    'X',   'P',  'AZ'],
-['0', 'X', 'AV2', 'AV3']];
-figurePlace[yAxis][xAxis] = 'P';
+[['1',    '2',    '3',    '4'],
+['X',     '6',    '7',    '8'],
+['X',     'O',   '11',  '12'],
+['X',    '14',   'X',  '16']];
+// figurePlace[yAxis][xAxis] = 'P';
 const gameBoard = `   
       1     2     3
 
@@ -37,11 +97,10 @@ B     ${figurePlace[1][0]}  |  ${figurePlace[1][1]}  |  ${figurePlace[1][2]}
 C     ${figurePlace[2][0]}  |  ${figurePlace[2][1]}  |  ${figurePlace[2][2]}
 
 `
-console.clear();
-console.log(gameBoard);
+console.log(hasWon(3,'X'));
 
 function hasWon(winningNumber, playerChar){
-  return horizontalChecking(winningNumber,playerChar) || verticalChecking(winningNumber, playerChar);
+  return horizontalChecking(winningNumber,playerChar) || verticalChecking(winningNumber, playerChar) || leftDiagonalChecking(winningNumber, playerChar) || rightDiagonalChecking(winningNumber,playerChar);
 }
 
 function horizontalChecking(winningNumber, playerChar){
@@ -85,7 +144,7 @@ function verticalChecking(winningNumber, playerChar){
   return false;
 }
 
-function LeftDiagonalChecking(winningNumber, playerChar){
+function leftDiagonalChecking(winningNumber, playerChar){
   for (let h = 0; h < figurePlace[0].length; h++){
    for (let i = 0; i < figurePlace.length; i++){
     let hitCounter = 0;
@@ -106,5 +165,23 @@ function LeftDiagonalChecking(winningNumber, playerChar){
   return false;
 }
 
-console.log(hasWon(3, 'X'));
-console.log(LeftDiagonalChecking(3, 'X'));
+function rightDiagonalChecking (winningNumber, playerChar){
+  for (let h = figurePlace[0].length - 1; h >= 0; h--){
+    for (let i = 0; i < figurePlace.length; i++){
+      let hitCounter = 0;
+      for (let j = 0 + h, k = 0 + i; k >= 0 && j >= 0; k--, j-- ){
+        // console.log(figurePlace[k][j]);
+        if (figurePlace[k][j] === playerChar){
+          hitCounter++;
+          if (hitCounter === winningNumber){
+            return true;
+          }
+        } else {
+            hitCounter = 0;
+          }
+        
+      }
+    }
+  }
+  return false;
+}
